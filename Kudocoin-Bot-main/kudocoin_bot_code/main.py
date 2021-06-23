@@ -28,8 +28,10 @@ async def change_status():
 ####################################################################
 # Main code starts :)
 
-mainshop = [{"name":"yestoken","price":100,"description":"Used to vote yes"},
-            {"name":"notoken","price":100,"description":"Used to vote no"}]
+mainshop = [{"name":"yestoken","price":100,"description":"Used to vote yes!"},
+            {"name":"notoken","price":100,"description":"Used to vote no!"},
+            {"name":"maybetoken","price":100,"description":"Used to vote maybe!"},
+            {"name":"testtoken","price":100,"description":"Used to vote test!"}]
 
 @client.command(aliases=['bal'])
 async def balance(ctx):
@@ -143,7 +145,7 @@ async def shop(ctx):
         name = item["name"]
         price = item["price"]
         desc = item["description"]
-        em.add_field(name = name, value = f"${price} | {desc}")
+        em.add_field(name = name, value = f"{price} coins | {desc}")
 
     await ctx.send(embed = em)
 
@@ -307,25 +309,20 @@ async def sell_this(user,item_name,amount,price = None):
 
 
 @client.command(aliases = ["lb"])
-async def leaderboard(ctx,x = 1):
+async def leaderboard(ctx,x = 5):
     users = await get_bank_data()
-    leader_board = {}
     total = []
     for user in users:
-        name = int(user)
-        total_amount = users[user]["wallet"] + users[user]["bank"]
-        leader_board[total_amount] = name
+        total_amount = users[user]["wallet"] + users[user]["bank"], users[user]["name"]
         total.append(total_amount)
+
 
     total = sorted(total,reverse=True)    
 
     em = discord.Embed(title = f"Top {x} Richest People" , description = "This is decided on the basis of raw money in the bank and wallet",color = discord.Color(0xfa43ee))
     index = 1
     for amt in total:
-        id_ = leader_board[amt]
-        member = client.get_user(id_)
-        name = member.name
-        em.add_field(name = f"{index}. {name}" , value = f"{amt}",  inline = False)
+        em.add_field(name = f"{index}.", value = f"{str(amt)}",  inline = False)
         if index == x:
             break
         else:
@@ -342,6 +339,7 @@ async def open_account(user):
         return False
     else:
         users[str(user.id)] = {}
+        users[str(user.id)]["name"] = [str(user.name)]
         users[str(user.id)]["wallet"] = 0
         users[str(user.id)]["bank"] = 0
 
