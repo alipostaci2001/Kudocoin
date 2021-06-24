@@ -44,17 +44,14 @@ class Info(commands.Cog):
 
     @commands.command(aliases=['help'])
     async def _help(self, ctx):
-        embedvar = discord.Embed(title="Help Commands",description=None, color=0x00ff00)
+        embedvar = discord.Embed(title="Help Commands",description="Kudocoin Commands", color=0x00ff00)
 
-        embedvar.add_field(name=')bot', value='To see bot info', inline=False)
         embedvar.add_field(name=')balance / )bal', value='To see your balance', inline=False)
         embedvar.add_field(name=')drip', value='To drip tokens', inline=False)
-        embedvar.add_field(name=')deposit', value='To deposit money in bank', inline=False)
-        embedvar.add_field(name=')withdraw', value='To withdraw money from bank', inline=False)
-        embedvar.add_field(name=')send', value='Send money to someone', inline=False)
+        embedvar.add_field(name=')send', value='Send Kudocoins to someone \n Syntax: )send \'@user\' \'amount\'', inline=False)
         embedvar.add_field(name=')shop', value='To view shop', inline=False)
-        embedvar.add_field(name=')buy', value='To, buy an item', inline=False)
-        embedvar.add_field(name=')sell', value='To sell an item', inline=False)
+        embedvar.add_field(name=')buy', value='To buy an item \n Syntax: )buy \'item\' \'amount\'', inline=False)
+        embedvar.add_field(name=')sell', value='To sell an item\n Syntax: )sell \'item\' \'amount\'', inline=False)
         embedvar.add_field(name=')bag', value='To view your inventory', inline=False)
         embedvar.add_field(name=')lb', value='To view leaderboard', inline=False)
 

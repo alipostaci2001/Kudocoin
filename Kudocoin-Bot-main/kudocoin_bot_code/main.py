@@ -10,8 +10,9 @@ client = commands.Bot(command_prefix=')')
 
 client.remove_command("help")
 
-status = cycle(
-    ['Try )help','Prefix - )'])
+status = cycle(['Coming soon'])
+# status = cycle(
+#     ['Try )help','Prefix - )'])
 
 
 @client.event
@@ -41,11 +42,9 @@ async def balance(ctx):
     users = await get_bank_data()
 
     wallet_amt = users[str(user.id)]["wallet"]
-    bank_amt = users[str(user.id)]["bank"]
 
     em = discord.Embed(title=f'{ctx.author.name} Balance',color = discord.Color.red())
     em.add_field(name="Wallet Balance", value=wallet_amt)
-    em.add_field(name='Bank Balance',value=bank_amt)
     await ctx.send(embed= em)
 
 @client.command()
@@ -65,52 +64,6 @@ async def drip(ctx):
         json.dump(users,f)
 
 
-@client.command(aliases=['wd'])
-async def withdraw(ctx,amount = None):
-    await open_account(ctx.author)
-    if amount == None:
-        await ctx.send("Please enter the amount")
-        return
-
-    bal = await update_bank(ctx.author)
-
-    amount = int(amount)
-
-    if amount > bal[1]:
-        await ctx.send('You do not have sufficient balance')
-        return
-    if amount < 0:
-        await ctx.send('Amount must be positive!')
-        return
-
-    await update_bank(ctx.author,amount)
-    await update_bank(ctx.author,-1*amount,'bank')
-    await ctx.send(f'{ctx.author.mention} You withdrew {amount} coins')
-
-
-@client.command(aliases=['dp'])
-async def deposit(ctx,amount = None):
-    await open_account(ctx.author)
-    if amount == None:
-        await ctx.send("Please enter the amount")
-        return
-
-    bal = await update_bank(ctx.author)
-
-    amount = int(amount)
-
-    if amount > bal[0]:
-        await ctx.send('You do not have sufficient balance')
-        return
-    if amount < 0:
-        await ctx.send('Amount must be positive!')
-        return
-
-    await update_bank(ctx.author,-1*amount)
-    await update_bank(ctx.author,amount,'bank')
-    await ctx.send(f'{ctx.author.mention} You deposited {amount} coins')
-
-
 @client.command(aliases=['sm'])
 async def send(ctx,member : discord.Member,amount = None):
     await open_account(ctx.author)
@@ -121,20 +74,20 @@ async def send(ctx,member : discord.Member,amount = None):
 
     bal = await update_bank(ctx.author)
     if amount == 'all':
-        amount = bal[0]
+        amount = bal
 
     amount = int(amount)
 
-    if amount > bal[0]:
+    if amount > bal:
         await ctx.send('You do not have sufficient balance')
         return
     if amount < 0:
         await ctx.send('Amount must be positive!')
         return
 
-    await update_bank(ctx.author,-1*amount,'bank')
-    await update_bank(member,amount,'bank')
-    await ctx.send(f'{ctx.author.mention} You gave {member} {amount} coins')
+    await update_bank(ctx.author,-1*amount,'wallet')
+    await update_bank(member,amount,'wallet')
+    await ctx.send(f'{ctx.author.name} gave {member.name} {amount} Kudocoins')
 
 
 @client.command()
@@ -210,7 +163,7 @@ async def buy_this(user,item_name,amount):
 
     bal = await update_bank(user)
 
-    if bal[0]<cost:
+    if bal<cost:
         return [False,2]
 
 
@@ -309,17 +262,17 @@ async def sell_this(user,item_name,amount,price = None):
 
 
 @client.command(aliases = ["lb"])
-async def leaderboard(ctx,x = 5):
+async def leaderboard(ctx,x = 200):
     users = await get_bank_data()
     total = []
     for user in users:
-        total_amount = users[user]["wallet"] + users[user]["bank"], users[user]["name"]
+        total_amount = users[user]["wallet"], users[user]["name"]
         total.append(total_amount)
 
 
     total = sorted(total,reverse=True)    
 
-    em = discord.Embed(title = f"Top {x} Richest People" , description = "This is decided on the basis of raw money in the bank and wallet",color = discord.Color(0xfa43ee))
+    em = discord.Embed(title = f"Kudocoin Leaderboard" , description = "A leaderboard for Seers who have accumulated Kudocoins",color = discord.Color(0xfa43ee))
     index = 1
     for amt in total:
         em.add_field(name = f"{index}.", value = f"{str(amt)}",  inline = False)
@@ -339,9 +292,8 @@ async def open_account(user):
         return False
     else:
         users[str(user.id)] = {}
-        users[str(user.id)]["name"] = [str(user.name)]
         users[str(user.id)]["wallet"] = 0
-        users[str(user.id)]["bank"] = 0
+        users[str(user.id)]["name"] = [str(user.name)]
 
     with open('mainbank.json','w') as f:
         json.dump(users,f)
@@ -363,7 +315,7 @@ async def update_bank(user,change=0,mode = 'wallet'):
 
     with open('mainbank.json','w') as f:
         json.dump(users,f)
-    bal = users[str(user.id)]['wallet'],users[str(user.id)]['bank']
+    bal = users[str(user.id)]['wallet']
     return bal
 
 
@@ -377,4 +329,4 @@ for filename in os.listdir('./cogs'):
         client.load_extension(f'cogs.{filename[:-3]}')
 
 
-client.run('Token')
+client.run('ODUwNzk0NzEwNDUyOTI4NTIz.YLu6UQ.GVA4vlA3qqeOskwd4oPc8fER3tY')
